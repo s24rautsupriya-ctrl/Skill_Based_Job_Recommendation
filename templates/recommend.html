@@ -1,0 +1,128 @@
+
+{% extends "base.html" %}
+
+{% block title %}Recommendations{% endblock %}
+
+{% block content %}
+
+<div class="pagehead">
+    <div>
+        <span class="eyebrow">AI-POWERED DISCOVERY</span>
+        <h1>Find Roles That Fit Your Skills</h1>
+        <p>Enter your skills, education and interests.</p>
+    </div>
+</div>
+
+<form class="panel formgrid" method="POST">
+
+    <label class="wide">
+        Your Skills
+
+        <textarea
+            name="skills"
+            rows="3"
+            required
+            placeholder="Python, SQL, Excel, Pandas"
+        >{{ skills or '' }}</textarea>
+    </label>
+
+    <label>
+        Education
+
+        <input
+            type="text"
+            name="education"
+            placeholder="BCA / B.Sc. IT"
+            value="{{ education or '' }}"
+        >
+    </label>
+
+    <label>
+        Interests
+
+        <input
+            type="text"
+            name="interests"
+            placeholder="Analytics, Software"
+            value="{{ interests or '' }}"
+        >
+    </label>
+
+    <div class="wide">
+        <button type="submit" class="btn primary">
+            Generate Recommendations ✦
+        </button>
+    </div>
+
+</form>
+
+{% if results %}
+
+<div class="resulthead">
+    <span class="eyebrow">YOUR RESULTS</span>
+    <h2>Top Matching Job Categories</h2>
+
+    <small>
+        Scores are text-similarity measures,
+        not probabilities of getting hired.
+    </small>
+</div>
+
+<div class="resultgrid">
+
+    {% for r in results %}
+
+    <article class="jobcard">
+
+        <div class="row">
+            <span class="tag">{{ r.category }}</span>
+            <b class="green">{{ r.score }}% Match</b>
+        </div>
+
+        <h3>{{ r.title }}</h3>
+
+        <p>{{ r.description }}</p>
+
+        <div class="bar">
+            <i
+                class="match-fill"
+                data-score="{{ r.score }}"
+            ></i>
+        </div>
+
+        <h4>Matched Skills</h4>
+
+        <div>
+            {% for s in r.matched %}
+                <span class="skill good">{{ s }}</span>
+            {% else %}
+                <small>No exact skill-name match.</small>
+            {% endfor %}
+        </div>
+
+        <h4>Skills to Consider Learning</h4>
+
+        <div>
+            {% for s in r.missing %}
+                <span class="skill">{{ s }}</span>
+            {% else %}
+                <small>No additional skills listed.</small>
+            {% endfor %}
+        </div>
+
+    </article>
+
+    {% endfor %}
+
+</div>
+
+{% elif request.method == "POST" %}
+
+<div class="panel">
+    <h3>No recommendations found</h3>
+    <p>Try entering more skills or different interests.</p>
+</div>
+
+{% endif %}
+
+{% endblock %}
